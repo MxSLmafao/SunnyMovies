@@ -71,7 +71,7 @@ export default function Navigation() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={logout}
+              onClick={() => logout()}
               className="hidden md:flex items-center space-x-2 text-light-grey hover:text-white hover:bg-netflix-red/20"
             >
               <LogOut size={16} />

@@ -13,11 +13,19 @@ export function useAuth() {
       }
 
       try {
-        const response = await apiRequest("/api/auth/validate", {
+        const response = await fetch("/api/auth/validate", {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ password: storedPassword }),
         });
-        return response;
+        
+        if (!response.ok) {
+          return { authenticated: false };
+        }
+        
+        return response.json();
       } catch (error) {
         return { authenticated: false };
       }
@@ -38,7 +46,7 @@ export function useAuth() {
     },
   });
 
-  const isAuthenticated = !!(storedAuth && authStatus?.authenticated);
+  const isAuthenticated = !!(storedAuth && (authStatus as any)?.authenticated);
 
   return {
     isAuthenticated,

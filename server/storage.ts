@@ -88,7 +88,7 @@ export class MemStorage implements IStorage {
   }
 
   async getBrowserSessionByPassword(password: string): Promise<BrowserSession | null> {
-    for (const [, session] of this.browserSessions) {
+    for (const session of Array.from(this.browserSessions.values())) {
       if (session.password === password && session.isActive) {
         return session;
       }
