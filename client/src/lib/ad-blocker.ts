@@ -21,16 +21,23 @@ export class AdBlocker {
     
     this.isActive = true;
     
-    // Block all popup attempts
-    window.open = () => {
-      console.log('🚫 Blocked popup/redirect attempt');
+    // Block popup attempts but allow legitimate video player popups
+    window.open = (url?: string | URL, target?: string, features?: string) => {
+      const urlStr = url?.toString() || '';
+      
+      // Allow video player related popups (fullscreen, player controls)
+      if (this.isVideoPlayerPopup(urlStr, features)) {
+        return this.originalWindowOpen.call(window, url, target, features);
+      }
+      
+      console.log('🚫 Blocked popup/redirect attempt:', urlStr);
       return null;
     };
 
     // Block target="_blank" links
     document.addEventListener('click', this.handleLinkClick, true);
     
-    // Block programmatic navigation
+    // Block programmatic navigation (but allow video player navigation)
     this.blockNavigation();
     
     // Block common ad redirect patterns
@@ -108,7 +115,20 @@ export class AdBlocker {
     };
   }
 
+  private isVideoPlayerPopup(url: string, features?: string): boolean {
+    // Allow fullscreen and video player related popups
+    if (features && features.includes('fullscreen')) return true;
+    if (url.includes('vidsrc') || url.includes('player') || url.includes('video')) return true;
+    return false;
+  }
+
   private isSuspiciousUrl(url: string): boolean {
+    // Don't block video streaming domains
+    const allowedDomains = ['vidsrc.net', 'vidsrc.me', 'vidsrc.to', 'embedsb.com'];
+    if (allowedDomains.some(domain => url.includes(domain))) {
+      return false;
+    }
+
     const suspiciousPatterns = [
       /ads?\.|advert|marketing|promo|offer|deal/i,
       /click|redirect|goto|jump|link/i,
@@ -135,10 +155,17 @@ export const AD_DOMAINS = [
 
 // Block requests to ad domains
 export function blockAdRequests(): void {
-  // Override fetch to block ad requests
+  // Override fetch to block ad requests (only if not already overridden)
+  if (window.fetch.toString().includes('originalFetch')) return;
+  
   const originalFetch = window.fetch;
   window.fetch = async (...args) => {
     const url = args[0]?.toString() || '';
+    
+    // Don't block video streaming requests
+    if (url.includes('vidsrc') || url.includes('video') || url.includes('stream')) {
+      return originalFetch.apply(window, args);
+    }
     
     if (AD_DOMAINS.some(domain => url.includes(domain))) {
       console.log('🚫 Blocked ad request:', url);

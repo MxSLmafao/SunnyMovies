@@ -24,28 +24,21 @@ export default function VideoPlayerModal({ movieId, isOpen, onClose }: VideoPlay
 
   const videoUrl = movieDetails?.imdb_id ? getVidSrcUrl(movieDetails.imdb_id) : "";
 
-  // Initialize comprehensive ad blocking
+  // Initialize selective ad blocking
   useEffect(() => {
     if (isOpen) {
+      console.log('🎬 Video player opened, activating ad protection');
+      
       const adBlocker = AdBlocker.getInstance();
       
-      // Activate ad blocking when video modal opens
+      // Activate selective ad blocking
       adBlocker.activate();
       blockAdRequests();
       
-      // Prevent page navigation and popups
-      const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-        e.preventDefault();
-        e.returnValue = 'Are you sure you want to leave? The video will stop playing.';
-        return e.returnValue;
-      };
-
-      window.addEventListener('beforeunload', handleBeforeUnload);
-
       return () => {
+        console.log('🎬 Video player closed, deactivating ad protection');
         // Deactivate ad blocking when modal closes
         adBlocker.deactivate();
-        window.removeEventListener('beforeunload', handleBeforeUnload);
       };
     }
   }, [isOpen]);
@@ -72,7 +65,7 @@ export default function VideoPlayerModal({ movieId, isOpen, onClose }: VideoPlay
               className="w-full h-full min-h-[80vh]"
               frameBorder="0"
               allowFullScreen
-              sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"
+              sandbox="allow-scripts allow-same-origin allow-presentation allow-forms allow-popups-to-escape-sandbox"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               title={`Watch ${movieDetails?.title}`}
               onLoad={() => {
