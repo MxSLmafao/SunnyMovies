@@ -187,22 +187,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Authentication routes
   
-  // Generate browser fingerprint from request headers
-  function generateBrowserFingerprint(req: any): string {
-    const userAgent = req.headers['user-agent'] || '';
-    const acceptLanguage = req.headers['accept-language'] || '';
-    const acceptEncoding = req.headers['accept-encoding'] || '';
-    const ipAddress = req.ip || req.connection.remoteAddress || '';
-    
-    const fingerprint = `${userAgent}-${acceptLanguage}-${acceptEncoding}-${ipAddress}`;
-    return crypto.createHash('sha256').update(fingerprint).digest('hex');
+  // Get client IP address
+  function getClientIP(req: any): string {
+    return req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
   }
 
   // Login route
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { password } = loginSchema.parse(req.body);
-      const browserFingerprint = generateBrowserFingerprint(req);
+      const clientIP = getClientIP(req);
       
       // First validate if password exists in config
       const isValidPassword = await storage.isValidPassword(password);
@@ -210,25 +204,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ success: false, message: "Invalid password" });
       }
       
-      // Check if password already exists in browser sessions
+      // Check if password already exists in IP sessions
       const existingSession = await storage.getBrowserSessionByPassword(password);
       
       if (existingSession) {
-        // Validate browser fingerprint
-        const isValid = await storage.validateBrowserSession(password, browserFingerprint);
+        // Validate IP address
+        const isValid = await storage.validateBrowserSession(password, clientIP);
         if (isValid) {
           res.json({ success: true, message: "Login successful" });
         } else {
-          res.status(401).json({ success: false, message: "This password is already in use on a different browser" });
+          res.status(401).json({ success: false, message: "This password is already in use from a different IP address" });
         }
       } else {
-        // Create new browser session
+        // Create new IP session
         await storage.createBrowserSession({
           password,
-          browserFingerprint,
+          browserFingerprint: clientIP,
           isActive: true,
         });
-        res.json({ success: true, message: "Password registered for this browser" });
+        res.json({ success: true, message: "Password registered for this IP address" });
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -240,9 +234,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/validate", async (req, res) => {
     try {
       const { password } = loginSchema.parse(req.body);
-      const browserFingerprint = generateBrowserFingerprint(req);
+      const clientIP = getClientIP(req);
       
-      const isValid = await storage.validateBrowserSession(password, browserFingerprint);
+      const isValid = await storage.validateBrowserSession(password, clientIP);
       
       if (isValid) {
         res.json({ success: true, authenticated: true });

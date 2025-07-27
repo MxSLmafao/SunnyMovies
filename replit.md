@@ -10,17 +10,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Authentication System
 
-### Browser-Specific Password Protection
+### IP-Based Password Protection
 - **Password Configuration**: Managed through `passwords.json` file in root directory
-- **Browser Fingerprinting**: Uses browser headers and IP to create unique fingerprints
-- **Session Management**: Each password locked to specific browser to prevent sharing
+- **IP Address Locking**: Each password locked to specific IP address to prevent sharing
+- **Session Management**: Tracks active sessions by IP address and password combination
 - **Access Control**: Login page protects all movie content and streaming features
 
 ### Password Management
 - **Config File**: `passwords.json` contains array of valid passwords
 - **Hot Reload**: Passwords can be updated without server restart via reload endpoint
 - **Default Passwords**: Fallback passwords if config file missing or corrupted
-- **Validation**: Server validates passwords against config before creating sessions
+- **IP Validation**: Server validates passwords against config and locks to requesting IP address
 
 ## System Architecture
 

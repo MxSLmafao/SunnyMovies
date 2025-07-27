@@ -111,7 +111,7 @@ export class MemStorage implements IStorage {
     return this.passwordsConfig?.passwords.includes(password) ?? false;
   }
 
-  async validateBrowserSession(password: string, browserFingerprint: string): Promise<boolean> {
+  async validateBrowserSession(password: string, ipAddress: string): Promise<boolean> {
     // First check if it's a valid password from config
     const isValidPass = await this.isValidPassword(password);
     if (!isValidPass) return false;
@@ -119,8 +119,8 @@ export class MemStorage implements IStorage {
     const session = await this.getBrowserSessionByPassword(password);
     if (!session) return false;
     
-    // Check if this password is already used by a different browser
-    if (session.browserFingerprint !== browserFingerprint) {
+    // Check if this password is already used by a different IP address
+    if (session.browserFingerprint !== ipAddress) {
       return false;
     }
     

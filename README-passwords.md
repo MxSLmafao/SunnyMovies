@@ -29,8 +29,8 @@ Passwords for the movie streaming application are managed through the `passwords
 
 - Each password must be unique
 - Passwords are case-sensitive
-- Each password gets locked to the first browser that uses it
-- If someone tries to use the same password from a different browser, they will be blocked
+- Each password gets locked to the first IP address that uses it
+- If someone tries to use the same password from a different IP address, they will be blocked
 
 ### Default Passwords
 
@@ -42,5 +42,5 @@ If the `passwords.json` file is missing or corrupted, the system will use these 
 
 - Keep the `passwords.json` file secure and don't share it publicly
 - Consider using strong, unique passwords
-- Each password can only be used by one browser at a time to prevent sharing
-- Users can logout and login again from the same browser without issues
+- Each password can only be used by one IP address at a time to prevent sharing
+- Users can logout and login again from the same IP address without issues
