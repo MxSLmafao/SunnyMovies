@@ -65,8 +65,6 @@ Preferred communication style: Simple, everyday language.
 - **Player Integration**: VidSrc embedded player for movie streaming
 - **IMDB Integration**: Uses IMDB IDs for video source resolution
 - **Responsive Player**: Full-screen capable video player with controls
-- **Ad Blocking**: Comprehensive ad blocking and redirect prevention system
-- **Security**: Sandboxed iframe with popup blocking and navigation protection
 
 ## Data Flow
 
