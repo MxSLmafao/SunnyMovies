@@ -1,7 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { movieSchema, movieDetailsSchema, genreSchema, tmdbResponseSchema, creditsSchema } from "@shared/schema";
+import { movieSchema, movieDetailsSchema, genreSchema, tmdbResponseSchema, creditsSchema, loginSchema } from "@shared/schema";
+import crypto from "crypto";
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY || process.env.VITE_TMDB_API_KEY || "";
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
@@ -181,6 +182,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error discovering movies:", error);
       res.status(500).json({ message: "Failed to discover movies" });
+    }
+  });
+
+  // Authentication routes
+  
+  // Generate browser fingerprint from request headers
+  function generateBrowserFingerprint(req: any): string {
+    const userAgent = req.headers['user-agent'] || '';
+    const acceptLanguage = req.headers['accept-language'] || '';
+    const acceptEncoding = req.headers['accept-encoding'] || '';
+    const ipAddress = req.ip || req.connection.remoteAddress || '';
+    
+    const fingerprint = `${userAgent}-${acceptLanguage}-${acceptEncoding}-${ipAddress}`;
+    return crypto.createHash('sha256').update(fingerprint).digest('hex');
+  }
+
+  // Login route
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { password } = loginSchema.parse(req.body);
+      const browserFingerprint = generateBrowserFingerprint(req);
+      
+      // Check if password already exists
+      const existingSession = await storage.getBrowserSessionByPassword(password);
+      
+      if (existingSession) {
+        // Validate browser fingerprint
+        const isValid = await storage.validateBrowserSession(password, browserFingerprint);
+        if (isValid) {
+          res.json({ success: true, message: "Login successful" });
+        } else {
+          res.status(401).json({ success: false, message: "This password is already in use on a different browser" });
+        }
+      } else {
+        // Create new browser session
+        await storage.createBrowserSession({
+          password,
+          browserFingerprint,
+          isActive: true,
+        });
+        res.json({ success: true, message: "Password registered for this browser" });
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(400).json({ success: false, message: "Invalid request" });
+    }
+  });
+
+  // Validate session route
+  app.post("/api/auth/validate", async (req, res) => {
+    try {
+      const { password } = loginSchema.parse(req.body);
+      const browserFingerprint = generateBrowserFingerprint(req);
+      
+      const isValid = await storage.validateBrowserSession(password, browserFingerprint);
+      
+      if (isValid) {
+        res.json({ success: true, authenticated: true });
+      } else {
+        res.json({ success: true, authenticated: false });
+      }
+    } catch (error) {
+      console.error("Validation error:", error);
+      res.status(400).json({ success: false, message: "Invalid request" });
     }
   });
 

@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Menu, X, Play } from "lucide-react";
+import { Search, Menu, X, Play, LogOut } from "lucide-react";
 import SearchBar from "@/components/search-bar";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 
 export default function Navigation() {
   const [location] = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,6 +68,16 @@ export default function Navigation() {
               <SearchBar />
             </div>
             
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={logout}
+              className="hidden md:flex items-center space-x-2 text-light-grey hover:text-white hover:bg-netflix-red/20"
+            >
+              <LogOut size={16} />
+              <span>Logout</span>
+            </Button>
+            
             <button
               className="md:hidden text-white"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -102,6 +115,18 @@ export default function Navigation() {
               <div className="pt-2">
                 <SearchBar />
               </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  logout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 text-light-grey hover:text-white hover:bg-netflix-red/20 w-fit"
+              >
+                <LogOut size={16} />
+                <span>Logout</span>
+              </Button>
             </div>
           </div>
         )}

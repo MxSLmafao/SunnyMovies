@@ -73,6 +73,26 @@ export const genreSchema = z.object({
   name: z.string(),
 });
 
+// Browser session schema for authentication
+export const browserSessionSchema = z.object({
+  id: z.string(),
+  password: z.string(),
+  browserFingerprint: z.string(),
+  isActive: z.boolean(),
+  createdAt: z.date(),
+  lastAccessedAt: z.date(),
+});
+
+export type BrowserSession = typeof browserSessionSchema._type;
+export type InsertBrowserSession = z.infer<typeof browserSessionSchema>;
+
+// Authentication schemas
+export const loginSchema = z.object({
+  password: z.string().min(1, "Password is required"),
+});
+
+export type LoginRequest = z.infer<typeof loginSchema>;
+
 export const tmdbResponseSchema = z.object({
   page: z.number(),
   results: z.array(movieSchema),
