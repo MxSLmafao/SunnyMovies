@@ -64,27 +64,26 @@ export default function HeroSection({ onPlayMovie, onShowDetails }: HeroSectionP
           alt={featuredMovie.title}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/30"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
       </div>
       
       <div className="relative z-10 container mx-auto px-4 lg:px-8 pt-20">
         <div className="max-w-2xl">
-          <h1 className="text-5xl lg:text-7xl font-bold mb-4 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] [text-shadow:_2px_2px_8px_rgb(0_0_0_/_80%)]">
+          <h1 className="text-5xl lg:text-7xl font-bold mb-4 text-white [text-shadow:_1px_1px_3px_rgb(0_0_0_/_60%)]">
             {featuredMovie.title}
           </h1>
-          <p className="text-lg lg:text-xl text-white mb-6 leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] [text-shadow:_1px_1px_4px_rgb(0_0_0_/_70%)]">
+          <p className="text-lg lg:text-xl text-white mb-6 leading-relaxed [text-shadow:_1px_1px_2px_rgb(0_0_0_/_50%)]">
             {featuredMovie.overview}
           </p>
           
           <div className="flex items-center space-x-4 mb-8">
             <div className="flex items-center">
-              <Star className="text-yellow-400 mr-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" size={20} />
-              <span className="text-lg font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{featuredMovie.vote_average.toFixed(1)}</span>
+              <Star className="text-yellow-400 mr-1" size={20} />
+              <span className="text-lg font-semibold text-white [text-shadow:_1px_1px_2px_rgb(0_0_0_/_50%)]">{featuredMovie.vote_average.toFixed(1)}</span>
             </div>
-            <span className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{getReleaseYear(featuredMovie.release_date)}</span>
-            <span className="bg-black bg-opacity-60 backdrop-blur-sm px-2 py-1 rounded text-sm text-white border border-white border-opacity-20">HD</span>
+            <span className="text-white [text-shadow:_1px_1px_2px_rgb(0_0_0_/_50%)]">{getReleaseYear(featuredMovie.release_date)}</span>
+            <span className="bg-black/40 backdrop-blur-sm px-2 py-1 rounded text-sm text-white">HD</span>
           </div>
           
           <div className="flex space-x-4">
