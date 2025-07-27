@@ -18,7 +18,7 @@ export const movieSchema = z.object({
   video: z.boolean(),
 });
 
-export const movieDetailsSchema = movieSchema.extend({
+export const movieDetailsSchema = movieSchema.omit({ genre_ids: true }).extend({
   runtime: z.number().nullable(),
   genres: z.array(z.object({
     id: z.number(),
