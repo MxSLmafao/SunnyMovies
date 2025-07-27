@@ -1,4 +1,6 @@
 import { type Movie, type MovieDetails, type Genre, type BrowserSession, type InsertBrowserSession } from "@shared/schema";
+import fs from 'fs';
+import path from 'path';
 
 export interface IStorage {
   // Cache methods for TMDB data
@@ -14,6 +16,7 @@ export interface IStorage {
   getBrowserSessionByPassword(password: string): Promise<BrowserSession | null>;
   updateBrowserSessionAccess(id: string): Promise<void>;
   validateBrowserSession(password: string, browserFingerprint: string): Promise<boolean>;
+  isValidPassword(password: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -21,11 +24,29 @@ export class MemStorage implements IStorage {
   private movieDetailsCache: Map<number, MovieDetails>;
   private genresCache: Genre[] | undefined;
   private browserSessions: Map<string, BrowserSession> = new Map();
+  private passwordsConfig: { passwords: string[] } | null = null;
 
   constructor() {
     this.movieCache = new Map();
     this.movieDetailsCache = new Map();
     this.genresCache = undefined;
+    this.loadPasswordsConfig();
+  }
+
+  private loadPasswordsConfig() {
+    try {
+      const configPath = path.join(process.cwd(), 'passwords.json');
+      const configData = fs.readFileSync(configPath, 'utf8');
+      this.passwordsConfig = JSON.parse(configData);
+    } catch (error) {
+      console.warn('Could not load passwords.json, using default passwords');
+      this.passwordsConfig = { passwords: ['admin123', 'user456'] };
+    }
+  }
+
+  private reloadPasswordsConfig() {
+    this.passwordsConfig = null;
+    this.loadPasswordsConfig();
   }
 
   async cacheMovies(key: string, movies: Movie[]): Promise<void> {
@@ -83,7 +104,18 @@ export class MemStorage implements IStorage {
     }
   }
 
+  async isValidPassword(password: string): Promise<boolean> {
+    if (!this.passwordsConfig) {
+      this.reloadPasswordsConfig();
+    }
+    return this.passwordsConfig?.passwords.includes(password) ?? false;
+  }
+
   async validateBrowserSession(password: string, browserFingerprint: string): Promise<boolean> {
+    // First check if it's a valid password from config
+    const isValidPass = await this.isValidPassword(password);
+    if (!isValidPass) return false;
+
     const session = await this.getBrowserSessionByPassword(password);
     if (!session) return false;
     

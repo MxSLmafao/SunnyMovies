@@ -204,7 +204,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { password } = loginSchema.parse(req.body);
       const browserFingerprint = generateBrowserFingerprint(req);
       
-      // Check if password already exists
+      // First validate if password exists in config
+      const isValidPassword = await storage.isValidPassword(password);
+      if (!isValidPassword) {
+        return res.status(401).json({ success: false, message: "Invalid password" });
+      }
+      
+      // Check if password already exists in browser sessions
       const existingSession = await storage.getBrowserSessionByPassword(password);
       
       if (existingSession) {
@@ -246,6 +252,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Validation error:", error);
       res.status(400).json({ success: false, message: "Invalid request" });
+    }
+  });
+
+  // Reload passwords configuration (for development)
+  app.post("/api/auth/reload-passwords", async (req, res) => {
+    try {
+      // Force reload of passwords config
+      (storage as any).reloadPasswordsConfig();
+      res.json({ success: true, message: "Password configuration reloaded" });
+    } catch (error) {
+      console.error("Reload error:", error);
+      res.status(500).json({ success: false, message: "Failed to reload passwords" });
     }
   });
 

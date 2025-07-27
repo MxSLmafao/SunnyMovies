@@ -122,12 +122,26 @@ export default function Login({ onLogin }: LoginProps) {
             </form>
           </Form>
           
-          <div className="mt-6 p-4 bg-gray-800/50 rounded-lg">
-            <h3 className="text-sm font-medium text-white mb-2">Browser Protection</h3>
-            <p className="text-xs text-gray-400">
-              Each password is locked to your specific browser to prevent unauthorized sharing. 
-              If you need to access from a different device, you'll need a separate password.
-            </p>
+          <div className="mt-6 space-y-4">
+            <div className="p-4 bg-gray-800/50 rounded-lg">
+              <h3 className="text-sm font-medium text-white mb-2">Browser Protection</h3>
+              <p className="text-xs text-gray-400">
+                Each password is locked to your specific browser to prevent unauthorized sharing. 
+                If you need to access from a different device, you'll need a separate password.
+              </p>
+            </div>
+            
+            <div className="p-4 bg-blue-900/20 border border-blue-700/30 rounded-lg">
+              <h3 className="text-sm font-medium text-blue-300 mb-2">Password Management</h3>
+              <p className="text-xs text-blue-200 mb-2">
+                Valid passwords are configured in <code className="bg-blue-800/50 px-1 rounded">passwords.json</code>
+              </p>
+              <p className="text-xs text-blue-200">
+                Default passwords: <code className="bg-blue-800/50 px-1 rounded">movie123</code>, 
+                <code className="bg-blue-800/50 px-1 rounded">streaming456</code>, 
+                <code className="bg-blue-800/50 px-1 rounded">cinema789</code>
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
