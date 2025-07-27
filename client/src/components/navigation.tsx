@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Search, Menu, X, Play } from "lucide-react";
-import SearchBar from "./search-bar";
+import SearchBar from "@/components/search-bar";
 
 export default function Navigation() {
   const [location] = useLocation();
