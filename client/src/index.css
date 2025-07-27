@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(348, 83%, 47%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+  
+  /* Netflix custom colors */
+  --netflix-red: hsl(348, 83%, 47%);
+  --dark-charcoal: hsl(20, 9%, 13%);
+  --deep-black: hsl(0, 0%, 8%);
+  --light-grey: hsl(0, 0%, 70%);
+  --card-grey: hsl(0, 0%, 18%);
+}
+
+.dark {
+  --background: hsl(0, 0%, 8%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(0, 0%, 18%);
+  --muted-foreground: hsl(0, 0%, 70%);
+  --popover: hsl(0, 0%, 8%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(0, 0%, 18%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(0, 0%, 18%);
+  --input: hsl(0, 0%, 18%);
+  --primary: hsl(348, 83%, 47%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(0, 0%, 18%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(0, 0%, 18%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-[var(--deep-black)] text-white overflow-x-hidden;
+    font-family: 'Roboto', 'Netflix Sans', Arial, sans-serif;
+  }
+}
+
+@layer utilities {
+  .netflix-red {
+    color: var(--netflix-red);
+  }
+  
+  .bg-netflix-red {
+    background-color: var(--netflix-red);
+  }
+  
+  .bg-dark-charcoal {
+    background-color: var(--dark-charcoal);
+  }
+  
+  .bg-deep-black {
+    background-color: var(--deep-black);
+  }
+  
+  .bg-card-grey {
+    background-color: var(--card-grey);
+  }
+  
+  .text-light-grey {
+    color: var(--light-grey);
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
