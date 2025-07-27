@@ -10,17 +10,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Authentication System
 
-### IP-Based Password Protection
+### Device-Based Password Protection
 - **Password Configuration**: Managed through `passwords.json` file in root directory
-- **IP Address Locking**: Each password locked to specific IP address to prevent sharing
-- **Session Management**: Tracks active sessions by IP address and password combination
+- **Device Token Authentication**: Each password locked to unique device token via secure cookies
+- **Session Management**: Tracks active sessions by device token and password combination
 - **Access Control**: Login page protects all movie content and streaming features
 
 ### Password Management
 - **Config File**: `passwords.json` contains array of valid passwords
 - **Hot Reload**: Passwords can be updated without server restart via reload endpoint
 - **Default Passwords**: Fallback passwords if config file missing or corrupted
-- **IP Validation**: Server validates passwords against config and locks to requesting IP address
+- **Device Validation**: Server validates passwords against config and creates unique device tokens stored in secure cookies
 
 ## System Architecture
 

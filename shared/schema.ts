@@ -73,11 +73,11 @@ export const genreSchema = z.object({
   name: z.string(),
 });
 
-// IP session schema for authentication
+// Device session schema for authentication
 export const browserSessionSchema = z.object({
   id: z.string(),
   password: z.string(),
-  browserFingerprint: z.string(), // Now stores IP address
+  deviceToken: z.string(), // Unique device identifier
   isActive: z.boolean(),
   createdAt: z.date(),
   lastAccessedAt: z.date(),

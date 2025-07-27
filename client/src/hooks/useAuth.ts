@@ -23,6 +23,7 @@ export function useAuth() {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include", // Include cookies
           body: JSON.stringify({ password: currentPassword }),
         });
         

@@ -187,16 +187,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Authentication routes
   
-  // Get client IP address
-  function getClientIP(req: any): string {
-    return req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
+  // Generate unique device token
+  function generateDeviceToken(): string {
+    return crypto.randomBytes(32).toString('hex');
+  }
+  
+  // Get device token from cookie
+  function getDeviceToken(req: any): string | null {
+    return req.headers.cookie?.split(';').find((c: string) => c.trim().startsWith('deviceToken='))?.split('=')[1] || null;
   }
 
   // Login route
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { password } = loginSchema.parse(req.body);
-      const clientIP = getClientIP(req);
+      const existingDeviceToken = getDeviceToken(req);
       
       // First validate if password exists in config
       const isValidPassword = await storage.isValidPassword(password);
@@ -204,25 +209,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ success: false, message: "Invalid password" });
       }
       
-      // Check if password already exists in IP sessions
+      // Check if password already exists in device sessions
       const existingSession = await storage.getBrowserSessionByPassword(password);
       
       if (existingSession) {
-        // Validate IP address
-        const isValid = await storage.validateBrowserSession(password, clientIP);
-        if (isValid) {
+        // If device already has the correct token, allow login
+        if (existingDeviceToken && existingSession.deviceToken === existingDeviceToken) {
+          await storage.updateBrowserSessionAccess(existingSession.id);
           res.json({ success: true, message: "Login successful" });
         } else {
-          res.status(401).json({ success: false, message: "This password is already in use from a different IP address" });
+          res.status(401).json({ success: false, message: "This password is already in use on a different device" });
         }
       } else {
-        // Create new IP session
+        // Create new device session with unique token
+        const deviceToken = generateDeviceToken();
         await storage.createBrowserSession({
           password,
-          browserFingerprint: clientIP,
+          deviceToken,
           isActive: true,
         });
-        res.json({ success: true, message: "Password registered for this IP address" });
+        
+        // Set secure cookie with device token
+        res.cookie('deviceToken', deviceToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        });
+        
+        res.json({ success: true, message: "Device registered successfully" });
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -234,9 +249,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/validate", async (req, res) => {
     try {
       const { password } = loginSchema.parse(req.body);
-      const clientIP = getClientIP(req);
+      const deviceToken = getDeviceToken(req);
       
-      const isValid = await storage.validateBrowserSession(password, clientIP);
+      if (!deviceToken) {
+        return res.json({ success: true, authenticated: false });
+      }
+      
+      const isValid = await storage.validateBrowserSession(password, deviceToken);
       
       if (isValid) {
         res.json({ success: true, authenticated: true });
