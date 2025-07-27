@@ -68,41 +68,7 @@ export default function HeroSection({ onPlayMovie, onShowDetails }: HeroSectionP
         <div className="absolute inset-0 bg-gradient-to-t from-deep-black via-transparent to-transparent"></div>
       </div>
       
-      <div className="relative z-10 container mx-auto px-4 lg:px-8 pt-20">
-        <div className="max-w-2xl">
-          <h1 className="text-5xl lg:text-7xl font-bold mb-4">{featuredMovie.title}</h1>
-          <p className="text-lg lg:text-xl text-light-grey mb-6 leading-relaxed">
-            {featuredMovie.overview}
-          </p>
-          
-          <div className="flex items-center space-x-4 mb-8">
-            <div className="flex items-center">
-              <Star className="text-yellow-400 mr-1" size={20} />
-              <span className="text-lg font-semibold">{featuredMovie.vote_average.toFixed(1)}</span>
-            </div>
-            <span className="text-light-grey">{getReleaseYear(featuredMovie.release_date)}</span>
-            <span className="bg-card-grey px-2 py-1 rounded text-sm">HD</span>
-          </div>
-          
-          <div className="flex space-x-4">
-            <Button
-              onClick={() => onPlayMovie(featuredMovie.id)}
-              className="bg-netflix-red hover:bg-red-700 text-white px-8 py-3 rounded-md font-semibold flex items-center transition-colors duration-200"
-            >
-              <Play className="mr-2" size={20} />
-              Play Now
-            </Button>
-            <Button
-              onClick={() => onShowDetails(featuredMovie.id)}
-              variant="secondary"
-              className="bg-card-grey hover:bg-gray-600 text-white px-8 py-3 rounded-md font-semibold flex items-center transition-colors duration-200"
-            >
-              <Info className="mr-2" size={20} />
-              More Info
-            </Button>
-          </div>
-        </div>
-      </div>
+      
     </section>
   );
 }
